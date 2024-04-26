@@ -47,36 +47,36 @@ public class UserController {
 
     @PutMapping
     public User update(@RequestBody User newUser) {
-
         try {
             if (newUser.getId() == null) {
                 log.error("Id должен быть указан");
                 throw new ValidationException("Id должен быть указан");
             }
-            try {
-                if (users.containsKey(newUser.getId())) {
 
-                    validateUser(newUser);
-                    User oldUser = users.get(newUser.getId());
-
-                    oldUser.setEmail(newUser.getEmail());
-                    oldUser.setLogin(newUser.getLogin());
-                    oldUser.setName(newUser.getName());
-                    oldUser.setBirthday(newUser.getBirthday());
-                    log.info("Пользователь успешно изменен");
-                    return oldUser;
-                } else {
-                    log.error("Пользователя с таким id не существует");
-                }
-            } catch (ValidationException e) {
-                log.error("Ошибка обновления пользователя: {}", e.getMessage());
+            if (!users.containsKey(newUser.getId())) {
+                log.error("Пользователя с таким id не существует");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Пользователя с таким id не существует");
             }
 
+            validateUser(newUser);
+            User oldUser = users.get(newUser.getId());
+
+            oldUser.setEmail(newUser.getEmail());
+            oldUser.setLogin(newUser.getLogin());
+            oldUser.setName(newUser.getName());
+            oldUser.setBirthday(newUser.getBirthday());
+            log.info("Пользователь успешно изменен");
+            return oldUser;
+
         } catch (ValidationException e) {
-            log.error("Ошибка обновления пользователя {}" + e.getMessage());
+            log.error("Ошибка валидации: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка валидации: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Ошибка обновления пользователя: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
         }
-        return null;
     }
+
 
     public static void validateUser(User user) throws ValidationException {
         if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
