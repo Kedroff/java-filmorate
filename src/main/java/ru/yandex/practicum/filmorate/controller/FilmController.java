@@ -54,29 +54,30 @@ public class FilmController {
                 throw new ValidationException("Id должен быть указан");
             }
 
-            try {
-                if (films.containsKey(newFilm.getId())) {
-
-                    validateFilm(newFilm);
-                    Film oldFilm = films.get(newFilm.getId());
-
-                    oldFilm.setName(newFilm.getName());
-                    oldFilm.setDescription(newFilm.getDescription());
-                    oldFilm.setReleaseDate(newFilm.getReleaseDate());
-                    oldFilm.setDuration(newFilm.getDuration());
-                    log.info("Фильм успешно изменен");
-                    return oldFilm;
-                } else {
-                    log.error("Фильма с таким id не существует");
-                }
-            } catch (ValidationException e) {
-                log.error("Ошибка: {}", e.getMessage());
+            if (!films.containsKey(newFilm.getId())) {
+                log.error("Фильма с таким id не существует");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Фильма с таким id не существует");
             }
+
+            validateFilm(newFilm);
+            Film oldFilm = films.get(newFilm.getId());
+
+            oldFilm.setName(newFilm.getName());
+            oldFilm.setDescription(newFilm.getDescription());
+            oldFilm.setReleaseDate(newFilm.getReleaseDate());
+            oldFilm.setDuration(newFilm.getDuration());
+            log.info("Фильм успешно изменен");
+            return oldFilm;
+
         } catch (ValidationException e) {
-            log.error("Ошибка обновления фильма: {}" + e.getMessage());
+            log.error("Ошибка валидации: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка валидации: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Ошибка обновления фильма: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
         }
-        return null;
     }
+
 
     public static void validateFilm(Film film) throws ValidationException {
         if (film.getName().isBlank()) {

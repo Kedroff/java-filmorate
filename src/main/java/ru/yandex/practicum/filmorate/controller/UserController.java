@@ -61,6 +61,7 @@ public class UserController {
 
                     oldUser.setEmail(newUser.getEmail());
                     oldUser.setLogin(newUser.getLogin());
+                    oldUser.setName(newUser.getName());
                     oldUser.setBirthday(newUser.getBirthday());
                     log.info("Пользователь успешно изменен");
                     return oldUser;
@@ -87,7 +88,7 @@ public class UserController {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
-        if (user.getName().isBlank() || user.getName() == null) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }
