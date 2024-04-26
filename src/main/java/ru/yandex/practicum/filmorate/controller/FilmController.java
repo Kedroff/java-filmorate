@@ -28,20 +28,27 @@ public class FilmController {
     @PostMapping
     public Film create(@RequestBody Film film) {
         try {
-            if (film.getName() == null || film.getReleaseDate() == null || film.getDuration() == null) {
-                throw new ValidationException("Отсутствуют обязательные поля");
+            if (film.getName() == null) {
+                throw new ValidationException("Отсутствует поле имени");
+            }else if(film.getReleaseDate() == null){
+                throw new ValidationException("Отсутствует поле даты релиза");
+            }else if(film.getDuration() == null){
+                throw new ValidationException("Отсутствует поле продолжительности");
             }
+
             validateFilm(film);
             film.setId(getNextId());
             films.put(film.getId(), film);
             log.info("Создан новый фильм: {}", film);
             return film;
         } catch (ValidationException e) {
-            log.error("Ошибка создания фильма: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка создания фильма: " + e.getMessage());
+            String errorMessage = "Ошибка создания фильма: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
         } catch (Exception e) {
-            log.error("Внутренняя ошибка сервера: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
+            String errorMessage = "Внутренняя ошибка сервера: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
         }
     }
 
@@ -50,13 +57,15 @@ public class FilmController {
     public Film update(@RequestBody Film newFilm) {
         try {
             if (newFilm.getId() == null) {
-                log.error("Id должен быть указан");
-                throw new ValidationException("Id должен быть указан");
+                String errorMessage = "Id должен быть указан";
+                log.error(errorMessage);
+                throw new ValidationException(errorMessage);
             }
 
             if (!films.containsKey(newFilm.getId())) {
-                log.error("Фильма с таким id не существует");
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Фильма с таким id не существует");
+                String errorMessage = "Фильма с таким id не существует";
+                log.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
             }
 
             validateFilm(newFilm);
@@ -70,11 +79,13 @@ public class FilmController {
             return oldFilm;
 
         } catch (ValidationException e) {
-            log.error("Ошибка валидации: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка валидации: " + e.getMessage());
+            String errorMessage = "Ошибка валидации: ";
+            log.error(errorMessage+ " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
         } catch (Exception e) {
-            log.error("Ошибка обновления фильма: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
+            String errorMessage = "Ошибка обновления фильма: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
         }
     }
 

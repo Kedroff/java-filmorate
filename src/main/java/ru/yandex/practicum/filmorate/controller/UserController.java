@@ -22,8 +22,12 @@ public class UserController {
     @PostMapping
     public User create(@RequestBody User user) {
         try {
-            if (user.getEmail() == null || user.getLogin() == null || user.getBirthday() == null) {
-                throw new ValidationException("Отсутствуют обязательные поля");
+            if (user.getEmail() == null) {
+                throw new ValidationException("Отсутствует поле Email");
+            } else if (user.getLogin() == null) {
+                throw new ValidationException("Отсутствует поле Login");
+            } else if (user.getBirthday() == null) {
+                throw new ValidationException("Отсутствует поле дня рождения");
             }
             validateUser(user);
             user.setId(getNextId());
@@ -31,11 +35,13 @@ public class UserController {
             log.info("Создан новый пользователь: {}", user);
             return user;
         } catch (ValidationException e) {
-            log.error("Ошибка создания пользователя: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка создания пользователя: " + e.getMessage());
+            String errorMessage = "Ошибка создания пользователя: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
         } catch (Exception e) {
-            log.error("Внутренняя ошибка сервера: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
+            String errorMessage = "Внутренняя ошибка сервера: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
         }
     }
 
@@ -49,13 +55,15 @@ public class UserController {
     public User update(@RequestBody User newUser) {
         try {
             if (newUser.getId() == null) {
-                log.error("Id должен быть указан");
-                throw new ValidationException("Id должен быть указан");
+                String errorMessage = "Id должен быть указан";
+                log.error(errorMessage);
+                throw new ValidationException(errorMessage);
             }
 
             if (!users.containsKey(newUser.getId())) {
-                log.error("Пользователя с таким id не существует");
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Пользователя с таким id не существует");
+                String errorMessage = "Пользователя с таким id не существует";
+                log.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
             }
 
             validateUser(newUser);
@@ -69,11 +77,13 @@ public class UserController {
             return oldUser;
 
         } catch (ValidationException e) {
-            log.error("Ошибка валидации: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка валидации: " + e.getMessage());
+            String errorMessage = "Ошибка валидации: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
         } catch (Exception e) {
-            log.error("Ошибка обновления пользователя: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
+            String errorMessage = "Ошибка обновления пользователя: ";
+            log.error(errorMessage + " {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
         }
     }
 
