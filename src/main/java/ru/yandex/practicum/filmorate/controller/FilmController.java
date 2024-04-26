@@ -30,9 +30,9 @@ public class FilmController {
         try {
             if (film.getName() == null) {
                 throw new ValidationException("Отсутствует поле имени");
-            }else if(film.getReleaseDate() == null){
+            } else if (film.getReleaseDate() == null) {
                 throw new ValidationException("Отсутствует поле даты релиза");
-            }else if(film.getDuration() == null){
+            } else if (film.getDuration() == null) {
                 throw new ValidationException("Отсутствует поле продолжительности");
             }
 
@@ -80,7 +80,7 @@ public class FilmController {
 
         } catch (ValidationException e) {
             String errorMessage = "Ошибка валидации: ";
-            log.error(errorMessage+ " {}", e.getMessage());
+            log.error(errorMessage + " {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
         } catch (Exception e) {
             String errorMessage = "Ошибка обновления фильма: ";
