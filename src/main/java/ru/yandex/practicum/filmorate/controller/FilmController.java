@@ -14,20 +14,6 @@ public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
 
-    @PostMapping
-    public Film create(@RequestBody Film film) {
-        try {
-            validateFilm(film);
-            film.setId(getNextId());
-            films.put(film.getId(), film);
-            log.info("Создан новый фильм: {}", film);
-            return film;
-        } catch (ValidationException e) {
-            log.error("Ошибка создания пользователя: {}", e.getMessage());
-        }
-        return film;
-    }
-
     @GetMapping
     public Collection<Film> findAll() {
         return films.values();
