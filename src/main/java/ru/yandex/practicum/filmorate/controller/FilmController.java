@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -26,15 +28,21 @@ public class FilmController {
     @PostMapping
     public Film create(@RequestBody Film film) {
         try {
+            if (film.getName() == null || film.getReleaseDate() == null || film.getDuration() == null) {
+                throw new ValidationException("Отсутствуют обязательные поля");
+            }
             validateFilm(film);
             film.setId(getNextId());
             films.put(film.getId(), film);
             log.info("Создан новый фильм: {}", film);
             return film;
         } catch (ValidationException e) {
-            log.error("Ошибка создания пользователя: {}", e.getMessage());
+            log.error("Ошибка создания фильма: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка создания фильма: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Внутренняя ошибка сервера: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
         }
-        return film;
     }
 
 

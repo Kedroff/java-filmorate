@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,15 +22,23 @@ public class UserController {
     @PostMapping
     public User create(@RequestBody User user) {
         try {
+            if (user.getEmail() == null || user.getLogin() == null || user.getBirthday() == null) {
+                throw new ValidationException("Отсутствуют обязательные поля");
+            }
             validateUser(user);
             user.setId(getNextId());
             users.put(user.getId(), user);
             log.info("Создан новый пользователь: {}", user);
+            return user;
         } catch (ValidationException e) {
             log.error("Ошибка создания пользователя: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка создания пользователя: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Внутренняя ошибка сервера: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера: " + e.getMessage());
         }
-        return user;
     }
+
 
     @GetMapping
     public Collection<User> findAll() {
