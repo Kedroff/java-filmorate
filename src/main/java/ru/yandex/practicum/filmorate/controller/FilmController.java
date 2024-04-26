@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +18,10 @@ public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
 
+    @GetMapping
+    public Collection<Film> findAll() {
+        return films.values();
+    }
 
     @PostMapping
     public Film create(@RequestBody Film film) {
@@ -33,8 +36,6 @@ public class FilmController {
         }
         return film;
     }
-
-
 
 
     @PutMapping
@@ -94,4 +95,4 @@ public class FilmController {
         return ++currentMaxId;
     }
 
-
+}
