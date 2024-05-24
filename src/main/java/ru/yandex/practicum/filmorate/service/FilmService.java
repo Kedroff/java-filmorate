@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -21,10 +23,12 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public Collection<Film> getFilms() {
@@ -33,16 +37,24 @@ public class FilmService {
 
     public void addLike(Long filmId, Long userId) throws ValidationException {
         Film film = filmStorage.findById(filmId);
+        User user = userStorage.findById(userId);
         if (film == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Like not found");
+        }
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         film.getLikes().add(userId);
     }
 
     public void removeLike(Long filmId, Long userId) throws ValidationException {
         Film film = filmStorage.findById(filmId);
+        User user = userStorage.findById(userId);
         if (film == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Like not found");
+        }
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         film.getLikes().remove(userId);
     }
