@@ -37,6 +37,11 @@ public class FilmController {
         return filmService.update(newFilm);
     }
 
+    @PutMapping
+    public Film updateFilm(@RequestBody Film newFilm) {
+        return filmService.update(newFilm);
+    }
+
     @PutMapping("/{id}/like/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addLike(@PathVariable Long id, @PathVariable Long userId) throws ValidationException {

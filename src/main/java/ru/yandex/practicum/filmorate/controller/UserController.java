@@ -37,6 +37,11 @@ public class UserController {
         return userService.update(newUser);
     }
 
+    @PutMapping
+    public User updateUser(@RequestBody User newUser) {
+        return userService.update(newUser);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
