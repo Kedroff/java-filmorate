@@ -25,21 +25,25 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void addFriend(Long userId, Long friendId) throws ValidationException {
+    public Collection<User> getUsers() {
+        return userStorage.findAll();
+    }
+
+    public void addFriend(Long userId, Long friendId) {
         User user = userStorage.findById(userId);
         User friend = userStorage.findById(friendId);
         if (user == null || friend == null) {
-            throw new ValidationException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
     }
 
-    public void removeFriend(Long userId, Long friendId) throws ValidationException {
+    public void removeFriend(Long userId, Long friendId) {
         User user = userStorage.findById(userId);
         User friend = userStorage.findById(friendId);
         if (user == null || friend == null) {
-            throw new ValidationException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
@@ -89,7 +93,7 @@ public class UserService {
         } catch (Exception e) {
             String errorMessage = "Ошибка обновления пользователя: ";
             log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage + e.getMessage());
         }
     }
 

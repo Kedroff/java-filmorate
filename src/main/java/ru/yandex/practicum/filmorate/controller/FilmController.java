@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -29,6 +30,11 @@ public class FilmController {
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable Long id) {
         return filmService.getFilmById(id);
+    }
+
+    @GetMapping
+    public Collection<Film> getFilms() {
+        return filmService.getFilms();
     }
 
     @PutMapping("/{id}")

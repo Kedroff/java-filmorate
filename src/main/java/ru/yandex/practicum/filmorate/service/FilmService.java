@@ -27,10 +27,14 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    public Collection<Film> getFilms() {
+        return filmStorage.findAll();
+    }
+
     public void addLike(Long filmId, Long userId) throws ValidationException {
         Film film = filmStorage.findById(filmId);
         if (film == null) {
-            throw new ValidationException("Film not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Like not found");
         }
         film.getLikes().add(userId);
     }
@@ -38,7 +42,7 @@ public class FilmService {
     public void removeLike(Long filmId, Long userId) throws ValidationException {
         Film film = filmStorage.findById(filmId);
         if (film == null) {
-            throw new ValidationException("Film not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Like not found");
         }
         film.getLikes().remove(userId);
     }
@@ -91,7 +95,7 @@ public class FilmService {
         } catch (Exception e) {
             String errorMessage = "Ошибка обновления фильма: ";
             log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage + e.getMessage());
         }
     }
 

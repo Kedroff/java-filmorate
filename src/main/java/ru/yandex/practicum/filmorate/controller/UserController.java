@@ -31,6 +31,11 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @GetMapping
+    public Collection<User> getUsers() {
+        return userService.getUsers();
+    }
+
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User newUser) {
         newUser.setId(id);
