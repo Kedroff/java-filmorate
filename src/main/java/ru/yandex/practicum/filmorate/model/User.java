@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -13,4 +15,5 @@ public class User {
     private String name;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
+    private Set<Long> friends = new HashSet<>();
 }

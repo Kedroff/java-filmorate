@@ -1,116 +1,60 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        try {
-            if (user.getEmail() == null) {
-                throw new ValidationException("Отсутствует поле Email");
-            } else if (user.getLogin() == null) {
-                throw new ValidationException("Отсутствует поле Login");
-            } else if (user.getBirthday() == null) {
-                throw new ValidationException("Отсутствует поле дня рождения");
-            }
-            validateUser(user);
-            user.setId(getNextId());
-            users.put(user.getId(), user);
-            log.info("Создан новый пользователь: {}", user);
-            return user;
-        } catch (ValidationException e) {
-            String errorMessage = "Ошибка создания пользователя: ";
-            log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
-        } catch (Exception e) {
-            String errorMessage = "Внутренняя ошибка сервера: ";
-            log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody User user) {
+        return userService.create(user);
     }
 
-
-    @GetMapping
-    public Collection<User> findAll() {
-        return users.values();
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
-    @PutMapping
-    public User update(@RequestBody User newUser) {
-        try {
-            if (newUser.getId() == null) {
-                String errorMessage = "Id должен быть указан";
-                log.error(errorMessage);
-                throw new ValidationException(errorMessage);
-            }
-
-            if (!users.containsKey(newUser.getId())) {
-                String errorMessage = "Пользователя с таким id не существует";
-                log.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-            }
-
-            validateUser(newUser);
-            User oldUser = users.get(newUser.getId());
-
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setLogin(newUser.getLogin());
-            oldUser.setName(newUser.getName());
-            oldUser.setBirthday(newUser.getBirthday());
-            log.info("Пользователь успешно изменен");
-            return oldUser;
-
-        } catch (ValidationException e) {
-            String errorMessage = "Ошибка валидации: ";
-            log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage + e.getMessage());
-        } catch (Exception e) {
-            String errorMessage = "Ошибка обновления пользователя: ";
-            log.error(errorMessage + " {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage + e.getMessage());
-        }
+    @PutMapping("/{id}")
+    public User updateUser(@RequestBody User newUser) {
+        return userService.update(newUser);
     }
 
-
-    public static void validateUser(User user) throws ValidationException {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Email не должен быть пустым и должен содержать @");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Login не должен быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем.");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
+        userService.addFriend(id, friendId);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @DeleteMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
+        userService.removeFriend(id, friendId);
     }
 
+    @GetMapping("/{id}/friends")
+    public Collection<User> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id);
+    }
 
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) throws ValidationException {
+        return userService.getCommonFriends(id, otherId);
+    }
 }

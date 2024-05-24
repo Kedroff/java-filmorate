@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -18,4 +19,5 @@ public class Film {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Integer duration;
+    private Set<Long> likes = new HashSet<>();
 }
