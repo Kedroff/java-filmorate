@@ -32,7 +32,8 @@ public class FilmController {
     }
 
     @PutMapping("/{id}")
-    public Film updateFilm(@RequestBody Film newFilm) {
+    public Film updateFilm(@PathVariable Long id, @RequestBody Film newFilm) {
+        newFilm.setId(id);
         return filmService.update(newFilm);
     }
 
