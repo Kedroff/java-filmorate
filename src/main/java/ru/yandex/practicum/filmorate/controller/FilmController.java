@@ -13,7 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-
+    static final String ID_PATH = "/{id}";
+    static final String LIKE_PATH = ID_PATH + "/like/{userId}";
+    static final String POPULAR_PATH = "/popular";
     private final FilmService filmService;
 
     @Autowired
@@ -27,7 +29,7 @@ public class FilmController {
         return filmService.create(film);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ID_PATH)
     public Film getFilmById(@PathVariable Long id) {
         return filmService.getFilmById(id);
     }
@@ -37,7 +39,7 @@ public class FilmController {
         return filmService.getFilms();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ID_PATH)
     public Film updateFilm(@PathVariable Long id, @RequestBody Film newFilm) {
         newFilm.setId(id);
         return filmService.update(newFilm);
@@ -48,19 +50,19 @@ public class FilmController {
         return filmService.update(newFilm);
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    @PutMapping(LIKE_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addLike(@PathVariable Long id, @PathVariable Long userId) throws ValidationException {
         filmService.addLike(id, userId);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
+    @DeleteMapping(LIKE_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) throws ValidationException {
         filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/popular")
+    @GetMapping(POPULAR_PATH)
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getTopFilms(count);
     }

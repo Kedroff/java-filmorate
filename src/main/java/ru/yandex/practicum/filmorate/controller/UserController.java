@@ -12,7 +12,10 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
+    static final String ID_PATH = "/{id}";
+    static final String ALL_FRIENDS_PATH = ID_PATH + "/friends";
+    static final String FRIEND_PATH = ID_PATH + "/friends/{friendId}";
+    static final String COMMON_FRIENDS_PATH = ID_PATH + "/friends/common/{otherId}";
     private final UserService userService;
 
     @Autowired
@@ -26,7 +29,7 @@ public class UserController {
         return userService.create(user);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ID_PATH)
     public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
@@ -36,7 +39,7 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ID_PATH)
     public User updateUser(@PathVariable Long id, @RequestBody User newUser) {
         newUser.setId(id);
         return userService.update(newUser);
@@ -47,24 +50,24 @@ public class UserController {
         return userService.update(newUser);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping(FRIEND_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
         userService.addFriend(id, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
+    @DeleteMapping(FRIEND_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
         userService.removeFriend(id, friendId);
     }
 
-    @GetMapping("/{id}/friends")
+    @GetMapping(ALL_FRIENDS_PATH)
     public Collection<User> getFriends(@PathVariable Long id) {
         return userService.getFriends(id);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
+    @GetMapping(COMMON_FRIENDS_PATH)
     public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) throws ValidationException {
         return userService.getCommonFriends(id, otherId);
     }
