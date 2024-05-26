@@ -1,16 +1,22 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class User {
-    private Long id;
-    private String email;
-    private String login;
-    private String name;
+    Long id;
+    String email;
+    String login;
+    String name;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthday;
+    LocalDate birthday;
+    Set<Long> friends = new HashSet<>();
 }
