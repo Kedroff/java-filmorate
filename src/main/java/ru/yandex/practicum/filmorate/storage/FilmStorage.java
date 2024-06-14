@@ -12,7 +12,7 @@ import java.util.Optional;
 
 
 public interface FilmStorage {
-    public Film createFilm(Film film) throws ValidationException, ValidationException;
+    public Film createFilm(Film film) throws ValidationException;
 
     public void deleteFilm(long id);
 
