@@ -1,25 +1,43 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
 
 public interface UserStorage {
-    User create(@RequestBody User user) throws ValidationException;
 
-    Collection<User> findAll();
+    public User getUser(long id);
 
-    User update(@RequestBody User newUser) throws ValidationException;
+    public List<User> getUsers();
 
-    void validateUser(User user) throws ValidationException;
+    public User createUser(User user);
 
-    void delete(Long id);
+    public void deleteUser(long id);
 
-    User findById(Long id);
+    public User updateUser(User user);
 
-    Collection<User> findByIds(Set<Long> ids);
+    public default HashMap<Long, User> getUserHashMap() {
+        return null;
+    }
 
+    public default List<User> addFriend(User user1, User user2) {
+        return null;
+    }
+
+    public default boolean removeFriend(User user1, User user2) {
+        return false;
+    }
+
+    public default List<Long> getListFriends(User user) {
+        return null;
+    }
+
+    public default List<User> getListFriendsUser(User user) {
+        return null;
+    }
+
+    public default List<Long> getListCommonFriends(User user1, User user2) {
+        return null;
+    }
 }

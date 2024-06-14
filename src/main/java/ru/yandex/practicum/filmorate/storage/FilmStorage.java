@@ -1,21 +1,50 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.GenreDao;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 
 public interface FilmStorage {
-    Collection<Film> findAll();
+    public Film createFilm(Film film) throws ValidationException, ValidationException;
 
-    Film create(@RequestBody Film film) throws ValidationException;
+    public void deleteFilm(long id);
 
-    Film update(@RequestBody Film newFilm) throws ValidationException;
+    public Film updateFilm(Film film);
 
-    void delete(Long id);
+    public Film getFilm(long id);
 
-    void validateFilm(Film film) throws ValidationException;
+    public Collection<Film> getFilms();
 
-    Film findById(Long id);
+    public Collection<Film> getFilms(int count);
+
+    public default boolean addLike(User user, Film film) {
+        return false;
+    }
+
+    public default boolean deleteLike(User user, Film film) {
+        return false;
+    }
+
+    public default Mpa getMpa(Optional<Integer> id) {
+        return null;
+    }
+
+    public default List<Mpa> getMpaAll() {
+        return null;
+    }
+
+    public default GenreDao getGenres(Optional<Integer> id) {
+        return null;
+    }
+
+    public default List<GenreDao> getGenresAll() {
+        return null;
+    }
 }

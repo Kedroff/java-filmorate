@@ -1,17 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-/**
- * Film.
- */
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Film {
@@ -21,5 +19,7 @@ public class Film {
     LocalDate releaseDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     Integer duration;
-    Set<Long> likes = new HashSet<>();
+    List<Long> likes;
+    Mpa mpa;
+    List<GenreDao> genres;
 }
