@@ -59,7 +59,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql);
         while (sqlRowSet.next()) {
             User user = User.builder().build();
-            user.setId((long) sqlRowSet.getInt("user_id"));
+            user.setId(sqlRowSet.getInt("user_id"));
             user.setEmail(sqlRowSet.getString("email"));
             user.setLogin(sqlRowSet.getString("login"));
             user.setName(sqlRowSet.getString("name"));

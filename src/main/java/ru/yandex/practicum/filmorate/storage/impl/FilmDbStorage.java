@@ -139,7 +139,7 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
         Film film = Film.builder().build();
         while (rowSet.next()) {
-            film.setId((long) rowSet.getInt("film_id"));
+            film.setId(rowSet.getInt("film_id"));
             film.setName(rowSet.getString("name"));
             film.setDescription(rowSet.getString("description"));
             film.setDuration(rowSet.getInt("duration"));
@@ -174,7 +174,7 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
         while (rowSet.next()) {
             Film film = Film.builder()
-                    .id((long) rowSet.getInt("film_id"))
+                    .id(rowSet.getInt("film_id"))
                     .name(rowSet.getString("name"))
                     .description(rowSet.getString("description"))
                     .releaseDate(rowSet.getDate("release_date").toLocalDate())
@@ -195,7 +195,7 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
         while (rowSet.next() && films.size() != count) {
             Film film = Film.builder()
-                    .id((long) rowSet.getInt("film_id"))
+                    .id(rowSet.getInt("film_id"))
                     .name(rowSet.getString("name"))
                     .description(rowSet.getString("description"))
                     .duration(rowSet.getInt("duration"))

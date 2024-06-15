@@ -14,7 +14,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Film {
-    Long id;
+    long id;
     @NotBlank
     String name;
     String description;

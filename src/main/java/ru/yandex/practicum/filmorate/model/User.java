@@ -14,7 +14,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class User {
-    Long id;
+    long id;
     String email;
     String login;
     String name;
