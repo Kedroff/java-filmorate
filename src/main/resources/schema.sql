@@ -64,7 +64,8 @@ insert into genres(name) values ('Документальный');
 insert into genres(name) values ('Боевик');
 
 insert into mpa(name) values ('G');
+insert into mpa(name) values ('NC-17');
 insert into mpa(name) values ('PG');
 insert into mpa(name) values ('PG-13');
 insert into mpa(name) values ('R');
-insert into mpa(name) values ('NC-17');
+
