@@ -277,10 +277,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Mpa> getMpaAll() { // доработать
+    public List<Mpa> getMpaAll() {
         List<Mpa> mpas = new ArrayList<>();
-        String sql = "";
-        sql = "select * from mpa";
+        String sql = "SELECT * FROM mpa ORDER BY id ASC";
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql);
         while (sqlRowSet.next()) {
             Mpa mpa = new Mpa();
@@ -290,6 +289,7 @@ public class FilmDbStorage implements FilmStorage {
         }
         return mpas;
     }
+
 
 
 }

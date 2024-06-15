@@ -55,4 +55,3 @@ create table if not exists mpa_films
     film_id int references films (film_id),
     mpa_id  int
 );
-
