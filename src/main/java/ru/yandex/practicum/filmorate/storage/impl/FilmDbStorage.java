@@ -78,7 +78,7 @@ public class FilmDbStorage implements FilmStorage {
                 String sql = "insert into genre_films (film_id, genre_id) values(?,?)";
                 jdbcTemplate.update(sql, film.getId(), genre.getId());
             } else {
-                throw new ValidationException("Genre c id " + genre.getId() + " не найдено");
+                throw new ValidationException(String.format("Genre c id %s не найдено", genre.getId()));
             }
         }
     }
@@ -90,7 +90,7 @@ public class FilmDbStorage implements FilmStorage {
                 String sql = "insert into mpa_films (film_id, mpa_id) values(?,?)";
                 jdbcTemplate.update(sql, film.getId(), film.getMpa().getId());
             } else {
-                throw new ValidationException("Mpa c id " + film.getMpa().getId() + " не найдено");
+                throw new ValidationException(String.format("Mpa c id %s не найдено", film.getMpa().getId()));
             }
         }
     }

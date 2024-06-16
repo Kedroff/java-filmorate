@@ -27,7 +27,7 @@ public class MpaController {
         if (filmService.getMpa(id) != null) {
             return filmService.getMpa(id);
         } else {
-            throw new NullPointerException("Mpa с id " + id + " не найден");
+            throw new NullPointerException(String.format("Mpa с id %s не найден", id));
         }
     }
 

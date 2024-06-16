@@ -14,31 +14,33 @@ public class FilmValidator {
     private static final LocalDate maxDateRelease = LocalDate.of(1895, 12, 28);
     private static final int descriptionLength = 200;
 
-
     public static boolean checkFilm(Film film) throws ValidationException {
         try {
             List<Long> list = new ArrayList<>();
             film.setLikes(list);
+
             if (film.getName().isBlank()) {
                 throw new ValidationException("Поле name не должно быть пустым");
             }
+
             if (film.getDescription().length() > descriptionLength) {
-                throw new ValidationException("Количество символов поля description не должно быть больше 200, " +
-                        " . Cейчас длина составляет " + film.getDescription().length());
+                throw new ValidationException(String.format("Количество символов поля description не должно быть больше %d. Cейчас длина составляет %d",
+                        descriptionLength, film.getDescription().length()));
             }
+
             if (film.getReleaseDate().isBefore(maxDateRelease)) {
-                throw new ValidationException("Дата релиза не должна быть раньше " + maxDateRelease + " . Указана " +
-                        "дата " + film.getReleaseDate());
+                throw new ValidationException(String.format("Дата релиза не должна быть раньше %s. Указана дата %s",
+                        maxDateRelease, film.getReleaseDate()));
             }
+
             if (film.getDuration() < 0) {
-                throw new ValidationException("Продолжительность фильма не может быть отрицательной. Вы указали длину " +
-                        +film.getDuration());
+                throw new ValidationException(String.format("Продолжительность фильма не может быть отрицательной. Вы указали длину %d",
+                        film.getDuration()));
             }
+
             return true;
         } catch (NullPointerException e) {
             throw new ValidationException("Поля не должны быть пустыми " + e.getMessage());
         }
-
-
     }
 }

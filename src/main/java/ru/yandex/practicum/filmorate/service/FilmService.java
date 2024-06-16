@@ -43,7 +43,7 @@ public class FilmService implements FilmServiceInterface {
                 return filmStorage.updateFilm(film);
             }
         }
-        throw new IllegalArgumentException("Фильм с id " + film.getId() + " не найден");
+        throw new IllegalArgumentException(String.format("Фильм с %s id не найден", film.getId()));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class FilmService implements FilmServiceInterface {
             filmStorage.addLike(user, film);
             return true;
         } else {
-            System.out.println("Лайк от пользователя " + user.getLogin() + " уже поставлен!");
+            System.out.println(String.format("Лайк от пользователя %s уже поставлен!", user.getLogin()));
             return false;
         }
     }
@@ -79,7 +79,7 @@ public class FilmService implements FilmServiceInterface {
             film.getLikes().remove(user.getId());
             return true;
         } else {
-            System.out.println("Лайк от пользователя " + user.getLogin() + " не удален!");
+            System.out.println(String.format("Лайк от пользователя %s не удален!", user.getLogin()));
             return false;
         }
     }

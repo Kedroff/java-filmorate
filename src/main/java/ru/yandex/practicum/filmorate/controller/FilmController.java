@@ -69,7 +69,7 @@ public class FilmController {
         if (filmService.updateFilm(film) != null) {
             return filmService.updateFilm(film);
         } else {
-            throw new NullPointerException("Фильм c id " + film.getId() + " не найден");
+            throw new NullPointerException(String.format("Фильм с id %s не найден", film.getId()));
         }
 
     }

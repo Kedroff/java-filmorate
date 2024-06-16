@@ -36,7 +36,8 @@ public class InMemoryUserStorage implements UserStorage {
         if (!userHashMap.containsKey(id)) {
             userHashMap.remove(id);
         } else {
-            System.out.println("Пользователь с id " + id + " не найден");
+            System.out.println(String.format("Пользователь с id %s не найден", id));
+
         }
     }
 

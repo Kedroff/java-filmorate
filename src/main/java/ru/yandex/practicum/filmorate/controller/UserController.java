@@ -84,7 +84,7 @@ public class UserController {
         if (userService.createUser(user) != null) {
             return userService.createUser(user);
         } else {
-            throw new ValidationException("Пользователь" + user.getLogin() + " уже существует");
+            throw new ValidationException(String.format("Пользователь %s уже существует", user.getLogin()));
         }
     }
 
@@ -94,7 +94,7 @@ public class UserController {
         if (userService.updateUser(user) != null) {
             return userService.updateUser(user);
         } else {
-            throw new NullPointerException("Пользователя" + user.getLogin() + " нет в списке");
+            throw new NullPointerException(String.format("Пользователя %s нет в списке", user.getLogin()));
         }
     }
 

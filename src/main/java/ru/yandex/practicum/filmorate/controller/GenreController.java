@@ -29,7 +29,7 @@ public class GenreController {
         if (filmService.getGenres(id) != null) {
             return filmService.getGenres(id);
         } else {
-            throw new NullPointerException("Жанр с id " + id + " не найден");
+            throw new NullPointerException(String.format("Жанр с id %s не найден", id));
         }
     }
 

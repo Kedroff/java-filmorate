@@ -51,7 +51,7 @@ public class FilmDbService implements FilmServiceInterface {
         if (filmStorage.getFilm(id) != null) {
             return filmStorage.getFilm(id);
         } else {
-            throw new NullPointerException("Фильм c id " + id + " не найден");
+            throw new NullPointerException(String.format("Фильм с id %s не найден", id));
         }
     }
 
