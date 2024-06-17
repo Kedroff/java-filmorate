@@ -2,20 +2,25 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Service("UserDbService")
+@Primary
 @Getter
-public class UserService implements UserServiceInterface {
+public class UserDbService implements UserServiceInterface {
 
-    final UserStorage userStorage;
+    @Qualifier("UserDbStorage")
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserDbService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -46,41 +51,35 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public List<User> addFriend(User friend1, User friend2) {
-        if (!friend1.getFriends().contains(friend2.getId())) {
-            friend1.getFriends().add(friend2.getId());
-            if (friend1.getId() != friend2.getId()) {
-                friend2.getFriends().add(friend1.getId());
-            }
-            List<User> list = new ArrayList<>();
-            list.add(userStorage.getUserHashMap().get(friend2.getId()));
-            return list;
-        }
-        return null;
+        return userStorage.addFriend(friend1, friend2);
     }
-
 
     @Override
     public boolean removeFriend(User friend1, User friend2) {
-        if (friend1.getFriends().contains(friend2.getId())) {
-            friend1.getFriends().remove(friend2.getId());
-            friend2.getFriends().remove(friend1.getId());
-            return true;
-        }
-        return false;
+        return userStorage.removeFriend(friend1, friend2);
     }
 
     @Override
     public List<Long> getListCommonFriends(User user1, User user2) {
+        List<Long> userFriends1 = userStorage.getListFriends(user1);
+        List<Long> userFriends2 = userStorage.getListFriends(user2);
         List<Long> commonFriends = new ArrayList<>();
-        commonFriends = user1.getFriends().stream()
-                .filter(id -> user2.getFriends().contains(id))
-                .collect(Collectors.toList());
+        for (long id : userFriends1) {
+            if (userFriends2.contains(id)) {
+                commonFriends.add(id);
+            }
+        }
         return commonFriends;
     }
 
     @Override
     public List<Long> getListFriends(User user) {
-        return new ArrayList<>(user.getFriends());
+        return userStorage.getListFriends(user);
+    }
+
+    @Override
+    public List<User> getListFriendsUser(User user) {
+        return userStorage.getListFriendsUser(user);
     }
 
 }

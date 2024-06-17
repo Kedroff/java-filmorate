@@ -1,74 +1,138 @@
 package ru.yandex.practicum.filmorate.controller;
 
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserServiceInterface;
+import ru.yandex.practicum.filmorate.validator.UserValidator;
 
-import java.util.Collection;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users")
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    static final String ID_PATH = "/{id}";
-    static final String ALL_FRIENDS_PATH = ID_PATH + "/friends";
-    static final String FRIEND_PATH = ID_PATH + "/friends/{friendId}";
-    static final String COMMON_FRIENDS_PATH = ID_PATH + "/friends/common/{otherId}";
-    private final UserService userService;
+
+    static final String pathForAddAndDeleteFriend = "/{id}/friends/{friendId}";
+    @Qualifier("UserDbService")
+    UserServiceInterface userService;
+    @Qualifier("FilmDbService")
+    FilmService filmService;
+
+    static String nullExceptionComment = "Параметр %s не может быть null";
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceInterface userService, FilmService filmService) {
         this.userService = userService;
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) {
-        return userService.create(user);
-    }
-
-    @GetMapping(ID_PATH)
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        this.filmService = filmService;
     }
 
     @GetMapping
-    public Collection<User> getUsers() {
+    public List<User> getUsers() {
         return userService.getUsers();
     }
 
-    @PutMapping(ID_PATH)
-    public User updateUser(@PathVariable Long id, @RequestBody User newUser) {
-        newUser.setId(id);
-        return userService.update(newUser);
+    @GetMapping(value = "/{id}")
+    public User getUser(@PathVariable Integer id) {
+        return userService.getUser(id);
+    }
+
+    @GetMapping(value = "/{id}/friends")
+    public List<User> getUserFriends(@PathVariable Integer id) {
+        if (id == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "id"));
+        }
+        try {
+            return userService.getListFriendsUser(userService.getUser(id));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Параметр id должен быть числом");
+        }
+    }
+
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        if (id == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "id"));
+        }
+        if (otherId == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "otherId"));
+        }
+        User user1 = userService.getUser(id);
+        User user2 = userService.getUser(otherId);
+
+        List<Long> friends = userService.getListCommonFriends(user1, user2);
+        List<User> users = new ArrayList<>();
+        for (long idUser : friends) {
+            users.add(userService.getUser(idUser));
+        }
+        return users;
+    }
+
+    @PostMapping
+    public User createUser(@Valid @RequestBody User user) throws ValidationException {
+        UserValidator.checkUser(user);
+        if (userService.createUser(user) != null) {
+            return userService.createUser(user);
+        } else {
+            throw new ValidationException(String.format("Пользователь %s уже существует", user.getLogin()));
+        }
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User newUser) {
-        return userService.update(newUser);
+    public User updateUser(@Valid @RequestBody User user) throws ValidationException {
+        UserValidator.checkUser(user);
+        if (userService.updateUser(user) != null) {
+            return userService.updateUser(user);
+        } else {
+            throw new NullPointerException(String.format("Пользователя %s нет в списке", user.getLogin()));
+        }
     }
 
-    @PutMapping(FRIEND_PATH)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
-        userService.addFriend(id, friendId);
+    @PutMapping(value = pathForAddAndDeleteFriend)
+    public List<User> addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        if (id == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "id"));
+        }
+        if (friendId == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "friendId"));
+        }
+        try {
+            User user = userService.getUser(id);
+            User friend = userService.getUser(friendId);
+            return userService.addFriend(user, friend);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(" Проверьте, что параметры id и friendId - числа");
+        }
+
     }
 
-    @DeleteMapping(FRIEND_PATH)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) throws ValidationException {
-        userService.removeFriend(id, friendId);
+
+    @DeleteMapping(value = pathForAddAndDeleteFriend)
+    public boolean deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        if (id == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "id"));
+        }
+        if (friendId == null) {
+            throw new NullPointerException(String.format(nullExceptionComment, "friendId"));
+        }
+        try {
+            User user = userService.getUser(id);
+            User friend = userService.getUser(friendId);
+            return userService.removeFriend(user, friend);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Проверьте параметры id и friendId - числа");
+        }
     }
 
-    @GetMapping(ALL_FRIENDS_PATH)
-    public Collection<User> getFriends(@PathVariable Long id) {
-        return userService.getFriends(id);
-    }
 
-    @GetMapping(COMMON_FRIENDS_PATH)
-    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) throws ValidationException {
-        return userService.getCommonFriends(id, otherId);
-    }
 }
